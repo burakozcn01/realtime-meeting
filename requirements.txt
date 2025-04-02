@@ -1,0 +1,9 @@
+Flask-SocketIO
+python-engineio
+python-socketio
+gevent
+Flask
+gevent-websocket
+kombu
+eventlet
+redis

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StrintLive Chat [{{ room_id }}]</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+
+    <style>
+        body {
+            background-color: #1c1c1c;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #f0f0f0;
+        }
+
+        #main-container {
+            display: flex;
+            flex-grow: 1;
+            height: calc(100vh - 80px);
+            padding: 20px;
+            gap: 20px;
+            background-color: #252525;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .video-container {
+            position: relative;
+            background-color: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        .video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .video-container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        }
+
+        .name-tag {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(37, 37, 37, 0.85);
+            color: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #333333;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #chat-header {
+            padding: 15px;
+            background-color: #e67e22;
+            color: white;
+            border-radius: 12px 12px 0 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            list-style-type: none;
+            padding: 20px;
+            margin: 0;
+            background-color: #252525;
+            border-bottom: 1px solid #555;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        #chat-messages li {
+            margin-bottom: 12px;
+            padding: 10px 15px;
+            background-color: #e67e22;
+            color: white;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s, background-color 0.3s, color 0.3s;
+        }
+
+        #chat-messages li:hover {
+            transform: scale(1.02);
+        }
+
+        #chat-form {
+            display: flex;
+            padding: 15px;
+            background-color: #252525;
+            border-top: 1px solid #555;
+            transition: background-color 0.3s;
+        }
+
+        #chat-input {
+            flex-grow: 1;
+            padding: 12px;
+            border-radius: 25px;
+            border: 1px solid #555;
+            background-color: #333333;
+            color: #f0f0f0;
+            outline: none;
+            transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+        }
+
+        #chat-input:focus {
+            border-color: #e67e22;
+        }
+
+        #chat-form button {
+            margin-left: 15px;
+            padding: 12px 20px;
+            background-color: #f1c40f;
+            border: none;
+            color: #333;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        #chat-form button:hover {
+            background-color: #d4ac0d;
+        }
+
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        #controls button {
+            width: 55px;
+            height: 55px;
+            border: none;
+            border-radius: 50%;
+            background-color: #e67e22;
+            color: #fff;
+            font-size: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #controls button:hover {
+            background-color: #cf711f;
+            transform: scale(1.1);
+        }
+
+        @media screen and (max-width: 768px) {
+            #chat-container {
+                display: none;
+            }
+
+            #controls button {
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        #video_grid {
+            flex: 3;
+            display: grid;
+            gap: 15px;
+            padding: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            background-color: #252525;
+            transition: background-color 0.3s;
+        }
+
+        #focus_container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+            width: 80vw;
+            height: 80vh;
+            margin: auto;
+            position: relative;
+        }
+
+        #focus_container video {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    </style>
+
+    <script type="text/javascript">
+        const myRoomID = "{{ room_id }}";
+        const myName = "{{ display_name }}";
+        let audioMuted = "{{ mute_audio }}" === "1";
+        let videoMuted = "{{ mute_video }}" === "1";
+        let focusedVideoId = null;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            initializePage();
+        });
+
+        function initializePage() {
+            setupControlButtons();
+            window.checkVideoLayout();
+            startCamera();
+        }
+
+        function setupControlButtons() {
+            document.getElementById("mute_audio_btn").addEventListener("click", toggleAudioMute);
+            document.getElementById("mute_video_btn").addEventListener("click", toggleVideoMute);
+        }
+
+        function toggleAudioMute() {
+            audioMuted = !audioMuted;
+            window.setAudioMuteState(audioMuted);
+        }
+
+        function toggleVideoMute() {
+            videoMuted = !videoMuted;
+            window.setVideoMuteState(videoMuted);
+        }
+
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { exact: "user" } },
+                    audio: true
+                });
+                const myVideo = document.getElementById("local_vid");
+                myVideo.srcObject = stream;
+                window.setAudioMuteState(audioMuted);
+                window.setVideoMuteState(videoMuted);
+            } catch (error) {
+                console.error("Camera could not be started:", error);
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div id="main-container">
+        <div id="video_grid"></div>
+    
+        <div id="focus_container" style="display: none;">
+        </div>
+    
+        <div id="chat-container">
+            <div id="chat-header">Chat</div>
+            <ul id="chat-messages">
+            </ul>
+            <form id="chat-form">
+                <input id="chat-input" type="text" placeholder="Type your message..." />
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="controls">
+        <button id="mute_audio_btn">
+            <i id="mute_icon" class="material-icons">mic_off</i>
+        </button>
+        <button id="mute_video_btn">
+            <i id="vid_mute_icon" class="material-icons">videocam_off</i>
+        </button>
+        <button id="screen_share_btn">
+            <i id="screen_share_icon" class="material-icons">present_to_all</i>
+        </button>
+        <button id="stats_btn">
+            <i class="material-icons">bar_chart</i>
+        </button>
+    </div>
+
+    <div class="modal" id="statsModal" tabindex="-1" aria-labelledby="statsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="statsModalLabel">Connection Statistics</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul id="stats-list">
+                        <li>Latency: <span id="latency">Loading...</span></li>
+                        <li>Packets Lost: <span id="packets-lost">Loading...</span></li>
+                        <li>Jitter: <span id="jitter">Loading...</span></li>
+                        <li>Bitrate: <span id="bitrate">Loading...</span></li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='chatroom_ui.js') }}"></script>
+    <script src="{{ url_for('static', filename='chatroom_networking.js') }}"></script>
+</body>
+</html>
