@@ -1,0 +1,409 @@
+/* 
+ * Strint Live - Main CSS Styles
+ * Contains styles for both login and chat room pages
+ */
+
+/* CSS Variables */
+:root {
+    /* Primary color scheme */
+    --primary-color: #bb86fc;
+    --secondary-color: #03dac6;
+    --accent-color: #e67e22;
+    --accent-hover: #cf711f;
+    
+    /* Background colors */
+    --background-color: #121212;
+    --card-background: #1e1e1e;
+    --input-background: #2c2c2c;
+    --chat-background: #252525;
+    --container-background: #333333;
+    
+    /* Text colors */
+    --text-color: #ffffff;
+    --secondary-text: #f0f0f0;
+    
+    /* Border colors */
+    --input-border-color: #3c3c3c;
+    --border-color: #555;
+    
+    /* Utility colors */
+    --error-color: #cf6679;
+    --chat-btn-color: #f1c40f;
+    --chat-btn-hover: #d4ac0d;
+}
+
+/* === General Styles === */
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* === Login Page Styles === */
+
+body.login-page {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.card {
+    padding: 2.5rem;
+    border-radius: 12px;
+    background: var(--card-background);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    max-width: 450px;
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card h1 {
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--primary-color);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+input[type="text"], input[type="password"] {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--input-border-color);
+    border-radius: 8px;
+    background-color: var(--input-background);
+    color: var(--text-color);
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    border-color: var(--secondary-color);
+    outline: none;
+}
+
+.login-page button {
+    padding: 0.75rem;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    color: #000;
+    font-size: 1.1rem;
+}
+
+.login-page button:hover {
+    background-color: #9b59b6;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 2rem;
+    color: var(--secondary-color);
+    font-size: 0.9rem;
+}
+
+.alert {
+    display: none;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    background-color: var(--error-color);
+    color: #ffffff;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-color);
+}
+
+.theme-toggle input {
+    display: none;
+}
+
+.slider {
+    width: 50px;
+    height: 24px;
+    background-color: #ccc;
+    border-radius: 34px;
+    position: relative;
+    transition: background-color 0.3s ease;
+    margin-right: 10px;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+input:checked + .slider {
+    background-color: var(--secondary-color);
+}
+
+input:checked + .slider::before {
+    transform: translateX(26px);
+}
+
+/* === Chat Room Styles === */
+
+body.chat-page {
+    background-color: #1c1c1c;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--secondary-text);
+}
+
+#main-container {
+    display: flex;
+    flex-grow: 1;
+    height: calc(100vh - 80px);
+    padding: 20px;
+    gap: 20px;
+    background-color: var(--chat-background);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Video Elements */
+.video-container {
+    position: relative;
+    background-color: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.video-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.video-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+.name-tag {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: rgba(37, 37, 37, 0.85);
+    color: var(--secondary-text);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#video_grid {
+    flex: 3;
+    display: grid;
+    gap: 15px;
+    padding: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    background-color: var(--chat-background);
+    transition: background-color 0.3s;
+}
+
+#focus_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    width: 80vw;
+    height: 80vh;
+    margin: auto;
+    position: relative;
+}
+
+#focus_container video {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* Chat Elements */
+#chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--container-background);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#chat-header {
+    padding: 15px;
+    background-color: var(--accent-color);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    list-style-type: none;
+    padding: 20px;
+    margin: 0;
+    background-color: var(--chat-background);
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#chat-messages li {
+    margin-bottom: 12px;
+    padding: 10px 15px;
+    background-color: var(--accent-color);
+    color: white;
+    border-radius: 15px;
+    max-width: 80%;
+    word-wrap: break-word;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s, background-color 0.3s, color 0.3s;
+}
+
+#chat-messages li:hover {
+    transform: scale(1.02);
+}
+
+#chat-form {
+    display: flex;
+    padding: 15px;
+    background-color: var(--chat-background);
+    border-top: 1px solid var(--border-color);
+    transition: background-color 0.3s;
+}
+
+#chat-input {
+    flex-grow: 1;
+    padding: 12px;
+    border-radius: 25px;
+    border: 1px solid var(--border-color);
+    background-color: var(--container-background);
+    color: var(--secondary-text);
+    outline: none;
+    transition: border-color 0.3s, background-color 0.3s, color 0.3s;
+}
+
+#chat-input:focus {
+    border-color: var(--accent-color);
+}
+
+#chat-form button {
+    margin-left: 15px;
+    padding: 12px 20px;
+    background-color: var(--chat-btn-color);
+    border: none;
+    color: #333;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+#chat-form button:hover {
+    background-color: var(--chat-btn-hover);
+}
+
+/* Controls */
+#controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    z-index: 1000;
+}
+
+#controls button {
+    width: 55px;
+    height: 55px;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    color: #fff;
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+#controls button:hover {
+    background-color: var(--accent-hover);
+    transform: scale(1.1);
+}
+
+/* === Responsive Styles === */
+
+@media (max-width: 576px) {
+    .card {
+        padding: 1.5rem;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #chat-container {
+        display: none;
+    }
+
+    #controls button {
+        width: 45px;
+        height: 45px;
+    }
+}
