@@ -10,57 +10,11 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     
-    <script type="text/javascript">
-        const myRoomID = "{{ room_id }}";
-        const myName = "{{ display_name }}";
-        let audioMuted = "{{ mute_audio }}" === "1";
-        let videoMuted = "{{ mute_video }}" === "1";
-        let focusedVideoId = null;
-
-        document.addEventListener("DOMContentLoaded", function () {
-            initializePage();
-        });
-
-        function initializePage() {
-            setupControlButtons();
-            window.checkVideoLayout();
-            startCamera();
-        }
-
-        function setupControlButtons() {
-            document.getElementById("mute_audio_btn").addEventListener("click", toggleAudioMute);
-            document.getElementById("mute_video_btn").addEventListener("click", toggleVideoMute);
-        }
-
-        function toggleAudioMute() {
-            audioMuted = !audioMuted;
-            window.setAudioMuteState(audioMuted);
-        }
-
-        function toggleVideoMute() {
-            videoMuted = !videoMuted;
-            window.setVideoMuteState(videoMuted);
-        }
-
-        async function startCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { exact: "user" } },
-                    audio: true
-                });
-                const myVideo = document.getElementById("local_vid");
-                myVideo.srcObject = stream;
-                window.setAudioMuteState(audioMuted);
-                window.setVideoMuteState(videoMuted);
-            } catch (error) {
-                console.error("Camera could not be started:", error);
-            }
-        }
-    </script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="chat-page">
 
     <div id="main-container">
         <div id="video_grid"></div>
@@ -115,6 +69,54 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const myRoomID = "{{ room_id }}";
+        const myName = "{{ display_name }}";
+        let audioMuted = "{{ mute_audio }}" === "1";
+        let videoMuted = "{{ mute_video }}" === "1";
+        let focusedVideoId = null;
+
+        document.addEventListener("DOMContentLoaded", function () {
+            initializePage();
+        });
+
+        function initializePage() {
+            setupControlButtons();
+            window.checkVideoLayout();
+            startCamera();
+        }
+
+        function setupControlButtons() {
+            document.getElementById("mute_audio_btn").addEventListener("click", toggleAudioMute);
+            document.getElementById("mute_video_btn").addEventListener("click", toggleVideoMute);
+        }
+
+        function toggleAudioMute() {
+            audioMuted = !audioMuted;
+            window.setAudioMuteState(audioMuted);
+        }
+
+        function toggleVideoMute() {
+            videoMuted = !videoMuted;
+            window.setVideoMuteState(videoMuted);
+        }
+
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { exact: "user" } },
+                    audio: true
+                });
+                const myVideo = document.getElementById("local_vid");
+                myVideo.srcObject = stream;
+                window.setAudioMuteState(audioMuted);
+                window.setVideoMuteState(videoMuted);
+            } catch (error) {
+                console.error("Camera could not be started:", error);
+            }
+        }
+    </script>
 
     <script src="{{ url_for('static', filename='chatroom_ui.js') }}"></script>
     <script src="{{ url_for('static', filename='chatroom_networking.js') }}"></script>
